@@ -1,4 +1,5 @@
-from app.database.session import Base, settings
+from app.core.config import settings
+from app.database.session import Base
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
