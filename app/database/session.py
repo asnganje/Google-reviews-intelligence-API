@@ -1,24 +1,25 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-
-class Settings(BaseSettings):
-    database_url:str
-
-    model_config = SettingsConfigDict(
-        env_file=".env"
-    )
-
-settings = Settings()
+from app.core.config import settings
 
 engine = create_engine(settings.database_url)
 
 SessionLocal = sessionmaker(
     bind=engine,
     autoflush=False,
-    autocommit=False
+    autocommit=False,
 )
+
 
 class Base(DeclarativeBase):
     pass
+
+
+def get_db():
+    """FastAPI dependency that yields a session and always closes it."""
+    db: Session = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
